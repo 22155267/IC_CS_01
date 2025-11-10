@@ -1,0 +1,107 @@
+{
+  "target": "http://testhtml5.vulnweb.com",
+  "pages_scanned": 8,
+  "vulnerabilities": [
+    {
+      "type": "Missing Security Header",
+      "severity": "Medium",
+      "description": "HSTS header is missing",
+      "url": null,
+      "payload": null,
+      "plain_summary": "The site is not sending some browser security settings \u2014 this can make some attacks easier for attackers.",
+      "header": "HSTS"
+    },
+    {
+      "type": "Missing Security Header",
+      "severity": "Medium",
+      "description": "CSP header is missing",
+      "url": null,
+      "payload": null,
+      "plain_summary": "The site is not sending some browser security settings \u2014 this can make some attacks easier for attackers.",
+      "header": "CSP"
+    },
+    {
+      "type": "Missing Security Header",
+      "severity": "Medium",
+      "description": "X-Content-Type-Options header is missing",
+      "url": null,
+      "payload": null,
+      "plain_summary": "The site is not sending some browser security settings \u2014 this can make some attacks easier for attackers.",
+      "header": "X-Content-Type-Options"
+    },
+    {
+      "type": "Missing Security Header",
+      "severity": "Medium",
+      "description": "X-Frame-Options header is missing",
+      "url": null,
+      "payload": null,
+      "plain_summary": "The site is not sending some browser security settings \u2014 this can make some attacks easier for attackers.",
+      "header": "X-Frame-Options"
+    },
+    {
+      "type": "Missing Security Header",
+      "severity": "Medium",
+      "description": "X-XSS-Protection header is missing",
+      "url": null,
+      "payload": null,
+      "plain_summary": "The site is not sending some browser security settings \u2014 this can make some attacks easier for attackers.",
+      "header": "X-XSS-Protection"
+    },
+    {
+      "type": "Missing Security Header",
+      "severity": "Medium",
+      "description": "Referrer-Policy header is missing",
+      "url": null,
+      "payload": null,
+      "plain_summary": "The site is not sending some browser security settings \u2014 this can make some attacks easier for attackers.",
+      "header": "Referrer-Policy"
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "severity": "High",
+      "description": "Possible XSS vulnerability detected",
+      "url": "http://testhtml5.vulnweb.com/login",
+      "payload": "<script>alert('XSS')</script>",
+      "plain_summary": "Parts of the site may run malicious scripts which could steal information from your browser or act on your behalf.",
+      "header": null
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "severity": "High",
+      "description": "Possible XSS vulnerability detected",
+      "url": "http://testhtml5.vulnweb.com/login",
+      "payload": "<script>alert('XSS')</script>",
+      "plain_summary": "Parts of the site may run malicious scripts which could steal information from your browser or act on your behalf.",
+      "header": null
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "severity": "High",
+      "description": "Possible XSS vulnerability detected",
+      "url": "http://testhtml5.vulnweb.com/login",
+      "payload": "<script>alert('XSS')</script>",
+      "plain_summary": "Parts of the site may run malicious scripts which could steal information from your browser or act on your behalf.",
+      "header": null
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "severity": "High",
+      "description": "Possible XSS vulnerability detected",
+      "url": "http://testhtml5.vulnweb.com/login",
+      "payload": "<script>alert('XSS')</script>",
+      "plain_summary": "Parts of the site may run malicious scripts which could steal information from your browser or act on your behalf.",
+      "header": null
+    },
+    {
+      "type": "Cross-Site Scripting (XSS)",
+      "severity": "High",
+      "description": "Possible XSS vulnerability detected",
+      "url": "http://testhtml5.vulnweb.com/login",
+      "payload": "<script>alert('XSS')</script>",
+      "plain_summary": "Parts of the site may run malicious scripts which could steal information from your browser or act on your behalf.",
+      "header": null
+    }
+  ],
+  "summary": "\ud83d\udea8 CRITICAL: 5 high-severity issue(s) found. Avoid entering sensitive information on this site.",
+  "scanned_at": "2025-11-10 15:21:51"
+}
