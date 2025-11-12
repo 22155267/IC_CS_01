@@ -1,342 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🔒 Web Security Scanner</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family: 'Roboto', Arial, sans-serif;
-    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-    color:#e8fbff;
-    min-height:100vh;
-    padding:28px;
-  }
-  .container{max-width:1100px;margin:0 auto}
-  header{display:flex;align-items:center;gap:18px;margin-bottom:22px}
-  .logo{width:72px;height:72px;border-radius:14px;display:flex;align-items:center;justify-content:center;
-        background:linear-gradient(135deg,#00b7ff,#7c5cff);box-shadow:0 8px 26px rgba(2,6,23,0.6);font-weight:700;color:#021022}
-  h1{font-size:1.6rem;margin:0;color:#f8fbff}
-  .lead{color:#bfeff0;margin-top:6px}
+  <meta charset="UTF-8">
+  <title>🛡️ CyberShield Web Security Scanner</title>
+  <style>
+    body {
+      background: radial-gradient(circle at center, #0b1b0b 20%, #1e3c1e 100%);
+      color: #c8facc;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      overflow: hidden;
+    }
 
-  .card{
-    background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);
-    padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);
-    box-shadow:0 12px 30px rgba(2,6,23,0.6);
-  }
+    h1 {
+      color: #76ff03;
+      margin-top: 40px;
+      font-size: 2.6rem;
+    }
 
-  .scan-box{display:flex;flex-direction:column;gap:12px;padding:18px}
-  .input-row{display:flex;gap:12px}
-  input{flex:1;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:#e6eef8}
-  input:focus{outline:none;box-shadow:0 0 12px rgba(0,183,255,0.12)}
-  .btn{padding:10px 18px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(90deg,#00b7ff,#7c5cff);color:#021022;font-weight:700}
-  .btn[disabled]{opacity:0.6;cursor:not-allowed}
+    h2 {
+      color: #a5d6a7;
+      margin-bottom: 30px;
+    }
 
-  .examples{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-  .chip{background:rgba(255,255,255,0.03);padding:8px 12px;border-radius:999px;color:#bfeff0;font-weight:600;border:1px solid rgba(255,255,255,0.02);cursor:pointer}
+    form {
+      margin-top: 40px;
+    }
 
-  .loading{display:none;margin-top:16px;padding:14px;border-radius:10px}
-  .spinner{width:40px;height:40px;border-radius:50%;border:4px solid rgba(255,255,255,0.06);border-top-color:#00b7ff;animation:spin 1s linear infinite;margin-right:12px;display:inline-block}
-  @keyframes spin{to{transform:rotate(360deg)}}
+    input[type="text"] {
+      padding: 10px;
+      width: 280px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+    }
 
-  .results{display:none;margin-top:18px;display:block}
-  .result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-  .kpi{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
-  .stat{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;min-width:160px;text-align:center}
-  .stat h3{margin:0;font-size:1.6rem;color:#fff}
-  .stat p{margin:6px 0 0;color:#9fc0c8;font-size:0.93rem}
+    button {
+      background-color: #2e7d32;
+      color: white;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
 
-  .badge{padding:8px 12px;border-radius:999px;font-weight:700;color:#021022}
-  .badge-sec{background:linear-gradient(90deg,#3ccf4e,#29b64b)}
-  .badge-warn{background:linear-gradient(90deg,#ffb347,#f59e0b)}
-  .badge-danger{background:linear-gradient(90deg,#ff6b6b,#ef4444)}
+    button:hover {
+      background-color: #43a047;
+    }
 
-  /* Big summary banner (critical / warning) */
-  .summary-banner{
-    margin-bottom:12px;padding:14px;border-radius:10px;color:#021022;background:linear-gradient(90deg,#ffefbf,#ffd9b3);
-    display:none;
-  }
-  .summary-banner.critical{background:linear-gradient(90deg,#ffd3d3,#ffb3b3);color:#3a0518}
-  .summary-banner.warn{background:linear-gradient(90deg,#fff5cc,#ffe5a8);color:#4b2f00}
-  .what-to-do{margin-top:10px;color:inherit}
+    .radar {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      margin: 60px auto;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(118, 255, 3, 0.1), rgba(0,0,0,0.9));
+      border: 4px solid #76ff03;
+      box-shadow: 0 0 20px #76ff03;
+      overflow: hidden;
+    }
 
-  .vuln-list{margin-top:12px}
-  .vuln{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:8px;padding:12px;margin-bottom:12px;border-left:4px solid #ef4444}
-  .vuln.medium{border-left-color:#f59e0b}
-  .vuln h3{margin:0;color:#00f0d0;display:flex;align-items:center;gap:10px}
-  .vuln p{margin:8px 0;color:#9fc0c8}
-  .code{background:#021022;color:#7ef2ff;padding:10px;border-radius:6px;font-family:monospace;overflow:auto}
+    .sweep {
+      position: absolute;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(118,255,3,0.3), transparent);
+      transform-origin: 100% 50%;
+      animation: radarSweep 2s linear infinite;
+    }
 
-  .plain{background:rgba(0,255,204,0.08);padding:10px;border-radius:6px;margin-top:8px;color:#031b18;font-weight:700}
+    @keyframes radarSweep {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
 
-  footer{margin-top:20px;color:#9fc0c8;text-align:center}
-  @media(max-width:720px){.input-row{flex-direction:column}.kpi{flex-direction:column}}
-</style>
+    .progress-container {
+      width: 300px;
+      height: 20px;
+      border-radius: 10px;
+      margin: 30px auto;
+      background: rgba(52,199,89,0.1);
+      overflow: hidden;
+      display: none;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #76ff03, #43a047);
+      border-radius: 10px;
+      animation: loading 5s linear forwards;
+    }
+
+    @keyframes loading {
+      from { width: 0%; }
+      to { width: 100%; }
+    }
+
+    .loading-text {
+      color: #76ff03;
+      margin-top: 10px;
+      font-size: 1.2rem;
+      display: none;
+    }
+
+    /* Disclaimer modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.7);
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .modal-content {
+      background: rgba(0,20,0,0.9);
+      margin: 15% auto;
+      padding: 30px;
+      border: 2px solid #76ff03;
+      border-radius: 15px;
+      width: 60%;
+      text-align: center;
+      color: #c8facc;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .modal-content h2 {
+      color: #76ff03;
+    }
+
+    .modal-content p {
+      margin: 15px 0;
+      font-size: 1.1rem;
+    }
+
+    .modal button {
+      margin-top: 15px;
+    }
+
+    @keyframes fadeIn {
+      from {opacity:0; transform: translateY(50px);}
+      to {opacity:1; transform: translateY(0);}
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="logo">WS</div>
-      <div>
-        <h1>Web Security Scanner</h1>
-        <div class="lead">Tech details + simple explanations — demo only. Use authorized test targets.</div>
-      </div>
-    </header>
+  <h1>🛡️ CyberShield</h1>
+  <h2>Smart Web Security Scanner</h2>
 
-    <div class="card scan-box">
-      <div class="input-row">
-        <input id="urlInput" placeholder="Enter website (e.g. testphp.vulnweb.com or https://example.com)" />
-        <button id="scanButton" class="btn" onclick="startScan()">🔍 Scan Now</button>
-      </div>
-      <div class="examples">
-        <div class="chip" onclick="fillUrl('http://testphp.vulnweb.com')">testphp.vulnweb.com</div>
-        <div class="chip" onclick="fillUrl('http://testhtml5.vulnweb.com')">testhtml5.vulnweb.com</div>
-      </div>
-    </div>
-
-    <div id="loading" class="card" style="display:none; margin-top:12px;">
-      <div style="display:flex;align-items:center">
-        <div class="spinner"></div>
-        <div>
-          <div style="font-weight:700;color:#fff">Scanning in progress…</div>
-          <div style="color:#9fc0c8;font-size:0.95rem">This may take a minute depending on the site.</div>
-        </div>
-      </div>
-    </div>
-
-    <div id="resultsContainer" style="display:none">
-      <div class="summary-banner" id="summaryBanner"></div>
-
-      <div class="card" id="resultsCard">
-        <div class="result-header">
-          <div>
-            <h2 style="margin:0">Scan Results</h2>
-            <div style="color:#9fc0c8;font-size:0.95rem">Detailed technical results and plain-English explanations</div>
-          </div>
-          <div>
-            <div id="statusBadge" class="badge badge-sec">Secure</div>
-            <div style="text-align:right;color:#9fc0c8;margin-top:6px;font-size:0.95rem">Target: <span id="targetLabel"></span></div>
-          </div>
-        </div>
-
-        <div class="kpi">
-          <div class="stat">
-            <h3 id="vulnCount">0</h3>
-            <p>Vulnerabilities</p>
-          </div>
-          <div class="stat">
-            <h3 id="pageCount">0</h3>
-            <p>Pages scanned</p>
-          </div>
-        </div>
-
-        <div id="vulnList" class="vuln-list"></div>
-      </div>
-    </div>
-
-    <footer>Made with ❤️ — only for authorised security testing</footer>
+  <div class="radar">
+    <div class="sweep"></div>
   </div>
 
-<script>
-  let currentUrl = '';
+  <form id="scanForm" action="/scan" method="POST">
+    <input type="text" name="url" placeholder="Enter website URL..." required>
+    <button type="submit">Scan Now</button>
+  </form>
 
-  function fillUrl(u){ document.getElementById('urlInput').value = u; }
+  <div class="progress-container" id="progressContainer">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+  <div class="loading-text" id="loadingText">🔄 Scanning in progress...</div>
 
-  async function startScan(){
-    const raw = document.getElementById('urlInput').value.trim();
-    if(!raw){ alert('Please enter a URL'); return; }
-    currentUrl = raw;
+  <!-- Disclaimer Modal -->
+  <div id="disclaimerModal" class="modal">
+    <div class="modal-content">
+      <h2>⚠️ Disclaimer</h2>
+      <p>For your task and ethical reasons, please only scan:</p>
+      <ul>
+        <li>Test/Vulnerable sites (e.g., <b>testphp.vulnweb.com</b>)</li>
+        <li>Your own applications</li>
+      </ul>
+      <p>Scanning other sites without permission is illegal and unethical.</p>
+      <button id="acceptBtn">I Understand, Start Scan</button>
+    </div>
+  </div>
 
-    // UI state
-    document.getElementById('loading').style.display='block';
-    document.getElementById('resultsContainer').style.display='none';
-    document.getElementById('scanButton').disabled=true;
+  <script>
+    const form = document.getElementById('scanForm');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+    const loadingText = document.getElementById('loadingText');
+    const modal = document.getElementById('disclaimerModal');
+    const acceptBtn = document.getElementById('acceptBtn');
 
-    try{
-      const res = await fetch('/scan', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ url: raw })
-      });
-      const body = await res.json();
-      if(!res.ok){ alert('Error: '+(body.error||'Unknown')); resetUi(); return; }
-      pollResults(body.target || raw);
-    }catch(e){ alert('Error starting scan: '+e.message); resetUi(); }
-  }
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      modal.style.display = 'block'; // show disclaimer modal
+    });
 
-  function resetUi(){ document.getElementById('loading').style.display='none'; document.getElementById('scanButton').disabled=false; }
-
-  async function pollResults(url){
-    let attempts=0, maxAttempts=60;
-    const enc = encodeURIComponent(url);
-    const interval = setInterval(async ()=>{
-      attempts++;
-      try{
-        const r = await fetch('/results/'+enc);
-        if(r.ok){
-          const data = await r.json();
-          showResults(data);
-          clearInterval(interval);
-          resetUi();
-        } else if(attempts>=maxAttempts){
-          clearInterval(interval);
-          alert('Scan timeout. Try again.');
-          resetUi();
-        }
-      }catch(e){
-        if(attempts>=maxAttempts){
-          clearInterval(interval);
-          alert('Error fetching results: '+e.message);
-          resetUi();
-        }
-      }
-    },2000);
-  }
-
-  function showResults(data){
-    // data: target, pages_scanned, vulnerabilities[], summary
-    const vulns = data.vulnerabilities || [];
-    const pages = data.pages_scanned || 0;
-    const summary = data.summary || '';
-
-    document.getElementById('targetLabel').textContent = data.target || currentUrl;
-    document.getElementById('vulnCount').textContent = vulns.length;
-    document.getElementById('pageCount').textContent = pages;
-
-    // Determine severity
-    const hasHigh = vulns.some(v=>v.severity === 'High');
-    const badge = document.getElementById('statusBadge');
-    if(vulns.length === 0){
-      badge.className = 'badge badge-sec';
-      badge.textContent = 'Secure';
-    } else if(hasHigh){
-      badge.className = 'badge badge-danger';
-      badge.textContent = 'Critical';
-    } else {
-      badge.className = 'badge badge-warn';
-      badge.textContent = 'Warning';
-    }
-
-    // Summary banner logic:
-    const banner = document.getElementById('summaryBanner');
-    banner.style.display = 'none';
-    banner.className = 'summary-banner';
-
-    // If server sent a summary, prefer that; else derive from high/medium
-    if(summary){
-      // show server summary; if it contains critical words, style accordingly
-      if(summary.toLowerCase().includes('critical') || summary.toLowerCase().includes('unsafe') ){
-        banner.classList.add('critical');
-      } else if(summary.toLowerCase().includes('notice') || summary.toLowerCase().includes('warning') ){
-        banner.classList.add('warn');
-      }
-      banner.innerHTML = `<strong>${summary}</strong>`;
-      // If critical, append the exact "What to do" advice below
-      if(banner.classList.contains('critical')){
-        banner.innerHTML += `<div class="what-to-do">
-          <p style="margin:10px 0 6px"><strong>What to do:</strong></p>
-          <ul style="margin:0 0 6px 18px;color:#5b1b1b">
-            <li>Avoid entering sensitive data if possible.</li>
-            <li>Contact the site owner or admin to report the issue.</li>
-            <li>Consider using a different site for payments or logins.</li>
-          </ul>
-        </div>`;
-      }
-      banner.style.display = 'block';
-    } else {
-      // fallback: create our own message if high severity
-      if(hasHigh){
-        banner.classList.add('critical');
-        banner.innerHTML = `<strong>Has critical issues</strong>
-          <div style="margin-top:8px;color:#3a0518">⚠️ This website may be unsafe. Do not enter passwords, credit card details, or other sensitive information on this site until issues are fixed.</div>
-          <div class="what-to-do">
-            <p style="margin:10px 0 6px"><strong>What to do:</strong></p>
-            <ul style="margin:0 0 6px 18px;color:#5b1b1b">
-              <li>Avoid entering sensitive data if possible.</li>
-              <li>Contact the site owner or admin to report the issue.</li>
-              <li>Consider using a different site for payments or logins.</li>
-            </ul>
-          </div>`;
-        banner.style.display='block';
-      } else if(vulns.length > 0){
-        banner.classList.add('warn');
-        banner.innerHTML = `<strong>⚠️ This website has some security issues.</strong><div style="margin-top:8px;color:#4b2f00">Be careful with sensitive information like passwords and payments.</div>`;
-        banner.style.display='block';
-      } else {
-        // secure: small friendly banner
-        banner.classList.add('warn'); // use warm tint but short message
-        banner.innerHTML = `<strong>✅ This website appears safe for normal use.</strong>`;
-        banner.style.display='block';
-      }
-    }
-
-    // Build vulnerability list (technical + plain English)
-    const list = document.getElementById('vulnList');
-    list.innerHTML = '';
-
-    if(vulns.length === 0){
-      const ok = document.createElement('div');
-      ok.className = 'vuln';
-      ok.style.borderLeftColor = '#3ccf4e';
-      ok.innerHTML = `<h3>✅ No vulnerabilities detected</h3><p style="color:#9fc0c8">The scanner did not detect obvious SQLi, XSS, or missing security headers.</p>`;
-      list.appendChild(ok);
-    } else {
-      vulns.forEach(v=>{
-        const el = document.createElement('div');
-        el.className = 'vuln' + (v.severity === 'High' ? '' : ' medium');
-
-        const title = document.createElement('h3');
-        title.innerHTML = `${v.severity === 'High' ? '🚨' : '⚠️'} ${escapeHtml(v.type || 'Issue')}`;
-        el.appendChild(title);
-
-        const sev = document.createElement('p');
-        sev.innerHTML = `<strong>Severity:</strong> ${escapeHtml(v.severity || '')}`;
-        el.appendChild(sev);
-
-        const desc = document.createElement('p');
-        desc.innerHTML = `<strong>Description:</strong> ${escapeHtml(v.description || '')}`;
-        el.appendChild(desc);
-
-        if(v.url){
-          const u = document.createElement('p');
-          u.innerHTML = `<strong>URL:</strong> ${escapeHtml(v.url)}`;
-          el.appendChild(u);
-        }
-        if(v.payload){
-          const code = document.createElement('div');
-          code.className = 'code';
-          code.innerText = v.payload;
-          el.appendChild(code);
-        }
-
-        // plain summary (server-provided or scanner-provided)
-        const plainText = v.plain_summary || v.plain || '';
-        if(plainText){
-          const plain = document.createElement('div');
-          plain.className = 'plain';
-          plain.innerHTML = escapeHtml(plainText);
-          el.appendChild(plain);
-        }
-
-        list.appendChild(el);
-      });
-    }
-
-    document.getElementById('resultsContainer').style.display='block';
-  }
-
-  function escapeHtml(s){
-    if(!s) return '';
-    return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
-  }
-
-  // Enter key triggers scan
-  document.getElementById('urlInput').addEventListener('keypress', function(e){
-    if(e.key === 'Enter'){ startScan(); }
-  });
-</script>
+    acceptBtn.addEventListener('click', function(){
+      modal.style.display = 'none'; // hide modal
+      progressContainer.style.display = 'block';
+      loadingText.style.display = 'block';
+      progressBar.style.width = '0%';
+      progressBar.style.animation = 'loading 5s linear forwards';
+      // submit after animation
+      setTimeout(() => form.submit(), 5200);
+    });
+  </script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 {
-  "target": "http://testhtml5.vulnweb.com",
-  "pages_scanned": 8,
+  "target": "http://testphp.vulnweb.com",
+  "pages_scanned": 10,
   "vulnerabilities": [
     {
       "type": "Missing Security Header",
@@ -57,10 +57,55 @@
       "header": "Referrer-Policy"
     },
     {
+      "type": "SQL Injection",
+      "severity": "High",
+      "description": "Possible SQL Injection vulnerability detected",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "payload": "' OR '1'='1' --",
+      "plain_summary": "An attacker might trick the site into revealing or changing private data (e.g., user accounts or stored information).",
+      "header": null
+    },
+    {
+      "type": "SQL Injection",
+      "severity": "High",
+      "description": "Possible SQL Injection vulnerability detected",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "payload": "' OR '1'='1' --",
+      "plain_summary": "An attacker might trick the site into revealing or changing private data (e.g., user accounts or stored information).",
+      "header": null
+    },
+    {
+      "type": "SQL Injection",
+      "severity": "High",
+      "description": "Possible SQL Injection vulnerability detected",
+      "url": "http://testphp.vulnweb.com/secured/newuser.php",
+      "payload": "' OR '1'='1' --",
+      "plain_summary": "An attacker might trick the site into revealing or changing private data (e.g., user accounts or stored information).",
+      "header": null
+    },
+    {
+      "type": "SQL Injection",
+      "severity": "High",
+      "description": "Possible SQL Injection vulnerability detected",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "payload": "' OR '1'='1' --",
+      "plain_summary": "An attacker might trick the site into revealing or changing private data (e.g., user accounts or stored information).",
+      "header": null
+    },
+    {
+      "type": "SQL Injection",
+      "severity": "High",
+      "description": "Possible SQL Injection vulnerability detected",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
+      "payload": "' OR '1'='1' --",
+      "plain_summary": "An attacker might trick the site into revealing or changing private data (e.g., user accounts or stored information).",
+      "header": null
+    },
+    {
       "type": "Cross-Site Scripting (XSS)",
       "severity": "High",
       "description": "Possible XSS vulnerability detected",
-      "url": "http://testhtml5.vulnweb.com/login",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
       "payload": "<script>alert('XSS')</script>",
       "plain_summary": "Parts of the site may run malicious scripts which could steal information from your browser or act on your behalf.",
       "header": null
@@ -69,7 +114,7 @@
       "type": "Cross-Site Scripting (XSS)",
       "severity": "High",
       "description": "Possible XSS vulnerability detected",
-      "url": "http://testhtml5.vulnweb.com/login",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
       "payload": "<script>alert('XSS')</script>",
       "plain_summary": "Parts of the site may run malicious scripts which could steal information from your browser or act on your behalf.",
       "header": null
@@ -78,30 +123,12 @@
       "type": "Cross-Site Scripting (XSS)",
       "severity": "High",
       "description": "Possible XSS vulnerability detected",
-      "url": "http://testhtml5.vulnweb.com/login",
-      "payload": "<script>alert('XSS')</script>",
-      "plain_summary": "Parts of the site may run malicious scripts which could steal information from your browser or act on your behalf.",
-      "header": null
-    },
-    {
-      "type": "Cross-Site Scripting (XSS)",
-      "severity": "High",
-      "description": "Possible XSS vulnerability detected",
-      "url": "http://testhtml5.vulnweb.com/login",
-      "payload": "<script>alert('XSS')</script>",
-      "plain_summary": "Parts of the site may run malicious scripts which could steal information from your browser or act on your behalf.",
-      "header": null
-    },
-    {
-      "type": "Cross-Site Scripting (XSS)",
-      "severity": "High",
-      "description": "Possible XSS vulnerability detected",
-      "url": "http://testhtml5.vulnweb.com/login",
+      "url": "http://testphp.vulnweb.com/search.php?test=query",
       "payload": "<script>alert('XSS')</script>",
       "plain_summary": "Parts of the site may run malicious scripts which could steal information from your browser or act on your behalf.",
       "header": null
     }
   ],
-  "summary": "\ud83d\udea8 CRITICAL: 5 high-severity issue(s) found. Avoid entering sensitive information on this site.",
-  "scanned_at": "2025-11-10 15:21:51"
+  "summary": "\ud83d\udea8 CRITICAL: 8 high-severity issue(s) found. Avoid entering sensitive information on this site.",
+  "scanned_at": "2025-11-11 19:52:20"
 }
