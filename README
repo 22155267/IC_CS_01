@@ -1,226 +1,71 @@
-🔒 Web Application Security Scanner
+# 🛡️ CyberShield Web Security Scanner
 
-A modern, professional web security scanner that detects SQL Injection, XSS vulnerabilities, and checks security headers, with both a Flask web interface and command-line interface.
+CyberShield is a modern web security scanner built with **Flask** and a sleek **radar-style UI**. It scans websites for common vulnerabilities (like SQL Injection, XSS, and missing security headers) and presents results in a **detailed, tech-savvy, and user-friendly dashboard**.
 
-📋 Features
+---
 
-✅ SQL Injection Testing – Tests forms with multiple SQL payloads
+## ⚡ Features
 
-✅ XSS Vulnerability Detection – Checks for Cross-Site Scripting
+- Input any URL and run a security scan.
+- Animated **radar and progress bar** during scanning.
+- **Results Dashboard** with:
+  - Vulnerability summary
+  - Risk level & message
+  - Layman-friendly explanation
+  - Recommendations & precautionary advice
+- Modern, visually appealing interface that matches the landing page style.
+- Ethical usage disclaimer and task instructions integrated.
 
-✅ Security Headers Check – HSTS, CSP, X-Frame-Options, and more
+---
 
-✅ Web Crawling – Automatically discovers and scans multiple pages
+## ⚠️ Important Note
 
-✅ Flask Web Interface – Modern, responsive UI with real-time scan results
+- **Only scan test/vulnerable sites** for demos and learning purposes.
+- **Test Sites**:
+  - [testphp.vulnweb.com](http://testphp.vulnweb.com)
+  - [testhtml5.vulnweb.com](http://testhtml5.vulnweb.com)
+  - DVWA (Damn Vulnerable Web App)
+  - OWASP Juice Shop
+- **Authorized testing only** for real sites (get permission first).
 
-✅ Command Line Interface – Run scans directly from terminal
+---
 
-✅ OWASP Top 10 Coverage – Focused on common web vulnerabilities
+## 🎓 Demo / Presentation Instructions
 
-🚀 Quick Start Guide
-Step 1: Install Required Packages
-pip install flask requests beautifulsoup4 colorama
+1. Open the app in your browser.
+2. Enter one of the **test sites** in the scanner input.
+3. Observe the **radar animation** and **progress bar**.
+4. Review the **results dashboard**, which highlights:
+   - Vulnerabilities detected
+   - Risk level (High, Medium, Low)
+   - Clear explanations & recommendations
+5. Explain how the scanner maps to **OWASP Top 10 vulnerabilities**:
+   - SQL Injection → A03
+   - XSS → A07
+   - Weak headers → A05
+6. Emphasize **ethical scanning** only on authorized sites.
 
-Step 2: Create Project Structure
-security-scanner/
-│
-├── scanner.py          # Main scanner logic
-├── app.py              # Flask web application
-├── templates/
-│   └── index.html      # Modern web interface
-├── requirements.txt    # Dependencies
-└── README.md           # This file
+---
 
-Step 3: Run the Scanner
+## 🛠 Tech Stack
 
-Option A – Web Interface (Recommended)
+- **Backend:** Python, Flask
+- **Frontend:** HTML, CSS, JavaScript
+- **Rendering:** Jinja2 templates
 
+---
+
+## 🚀 Usage
+
+```bash
+# Clone the repository
+git clone https://github.com/22155267/IC_CS_01.git
+
+# Navigate into the project
+cd IC_CS_01
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the app
 python app.py
-
-
-Open browser: http://localhost:5000
-
-Enter target URL and click “🔍 Scan Now”
-
-Option B – Command Line
-
-python scanner.py http://testphp.vulnweb.com
-
-⚠️ Scan Results Warning
-
-When critical vulnerabilities are detected, the scanner will display:
-
-Scan Results
-Has critical issues
-⚠️ This website may be unsafe. Do not enter passwords, credit card details, or other sensitive information on this site until issues are fixed.
-
-
-What to do:
-
-Avoid entering sensitive data if possible
-
-Contact the site owner or admin to report the issue
-
-Consider using a different site for payments or logins
-
-This alert matches the modern UI design for real-time results.
-
-🔍 What the Scanner Checks
-1. Security Headers
-
-✅ Strict-Transport-Security (HSTS)
-
-✅ Content-Security-Policy (CSP)
-
-✅ X-Content-Type-Options
-
-✅ X-Frame-Options
-
-✅ X-XSS-Protection
-
-✅ Referrer-Policy
-
-2. SQL Injection
-
-Payload examples:
-
-' OR '1'='1
-' OR '1'='1' --
-admin' --
-' UNION SELECT NULL--
-
-3. Cross-Site Scripting (XSS)
-
-Payload examples:
-
-<script>alert('XSS')</script>
-<img src=x onerror=alert('XSS')>
-<svg/onload=alert('XSS')>
-
-🌐 GitHub Deployment
-Initialize Repository
-git init
-git add .
-git commit -m "Initial commit: Web Security Scanner"
-
-Create Remote Repository
-
-Go to https://github.com/new
-
-Name: web-security-scanner
-
-Do not initialize with README (we already have one)
-
-Push to GitHub
-git remote add origin https://github.com/YOUR_USERNAME/web-security-scanner.git
-git branch -M main
-git push -u origin main
-
-Add .gitignore
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-venv/
-env/
-.env
-*.log
-
-🧪 Testing the Scanner
-
-Safe test sites (intentionally vulnerable):
-
-http://testphp.vulnweb.com
- – PHP testing site
-
-http://testhtml5.vulnweb.com
- – HTML5 testing site
-
-http://testasp.vulnweb.com
- – ASP testing site
-
-⚠️ Only scan sites you own or have explicit permission to test.
-
-🎬 Demo Script
-
-Open web interface → Show modern UI
-
-Enter test site → http://testphp.vulnweb.com
-
-Click “🔍 Scan Now” → Show crawling progress
-
-Show scan results → Highlight SQLi, XSS, missing headers
-
-Optional: Run CLI version → python scanner.py http://testphp.vulnweb.com
-
-Explain vulnerabilities and critical warnings
-
-⚙️ Advanced Configuration
-
-Scan Depth:
-
-self.crawl_website(self.target_url, max_pages=20)  # Change to 50+ for deeper scans
-
-
-Add More Payloads: Extend sql_payloads or xss_payloads in scanner.py.
-
-🐛 Troubleshooting
-Issue	Solution
-Module not found	pip install -r requirements.txt
-Port already in use	Change port in app.py (e.g., 5001)
-Permission denied	Make scanner executable: chmod +x scanner.py
-📊 OWASP Top 10 Coverage
-
-✅ A03:2021 – Injection (SQLi)
-
-✅ A07:2021 – Cross-Site Scripting (XSS)
-
-✅ A05:2021 – Security Misconfiguration (Headers)
-
-⚠️ Legal Disclaimer
-
-Only scan websites you own or have permission to test.
-
-Unauthorized testing is illegal.
-
-This tool is for educational purposes only.
-
-🤝 Contributing
-
-Fork the repository
-
-Create a feature branch
-
-Make your changes
-
-Submit a pull request
-
-📝 License
-
-MIT License – Free to use for learning and educational purposes.
-
-🎯 Project Completion Checklist
-
-Security headers check (HSTS, CSP, etc.) ✅
-
-SQL Injection testing ✅
-
-XSS detection ✅
-
-Web crawling ✅
-
-CLI & Flask UI ✅
-
-Modern HTML/CSS UI ✅
-
-Real-time scan results ✅
-
-Comprehensive reporting ✅
-
-OWASP Top 10 coverage ✅
-
-GitHub ready ✅
-
-Documentation complete ✅
