@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SecureShare — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg-dark-1: #121416;
+  --bg-dark-2: #1b1f24;
+  --bg-light-1: #eef7ff;
+  --bg-light-2: #f7fcff;
+  --accent: #00ff84;
+  --accent-dark: #36c270;
+  --accent-light: #62e79a;
+  --muted-dark: #98a2a8;
+  --muted-light: #1b1f24;
+  --glass: rgba(255,255,255,0.04);
+  --card-radius: 14px;
+  --shadow-lg: 0 12px 40px rgba(2,6,23,0.65);
+  --soft-glow: 0 8px 30px rgba(54,194,112,0.06);
+  --glass-blur: 10px;
+}
+
+/* ---------------------- GLOBAL ---------------------- */
+*{box-sizing:border-box;}
+html,body{height:100%; margin:0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+body{
+  display:flex; flex-direction:column; min-height:100vh;
+  background: linear-gradient(180deg,var(--bg-dark-1) 0%, var(--bg-dark-2) 100%);
+  color:#e9f7ee;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  transition: background 0.4s, color 0.4s;
+}
+body.light{
+  background: linear-gradient(135deg,var(--bg-light-1), var(--bg-light-2));
+  color: var(--muted-light);
+}
+
+/* ---------------------- BACKGROUND LINE MESH ---------------------- */
+canvas#lineCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* ---------------------- THEME TOGGLE ---------------------- */
+.theme-toggle{
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  background: #26c6da;
+  color: black;
+  border:none;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  cursor:pointer;
+  font-weight:600;
+  box-shadow: 0px 0px 12px rgba(38,198,218,0.35);
+  display:flex; justify-content:center; align-items:center;
+  z-index:10;
+  transition:0.3s;
+}
+.theme-toggle:hover{ background: #1fb6c4; }
+
+/* ---------------------- NAVBAR & LAYOUT ---------------------- */
+nav{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:14px 22px; border-bottom:1px solid rgba(255,255,255,0.02);
+  backdrop-filter: blur(6px);
+}
+.brand{display:flex; gap:12px; align-items:center;}
+.logo{
+  width:44px; height:44px; border-radius:10px;
+  display:grid; place-items:center;
+  color: var(--accent);
+  font-weight:700;
+  background: linear-gradient(135deg, rgba(54,194,112,0.14), rgba(98,231,154,0.06));
+  border:1px solid rgba(54,194,112,0.06);
+}
+.nav-actions{display:flex; gap:10px; align-items:center;}
+.btn-ghost{
+  background:transparent; border:1px solid rgba(255,255,255,0.04);
+  color: var(--muted-dark); padding:8px 12px; border-radius:10px; cursor:pointer;
+  transition:0.3s;
+}
+.btn-ghost:hover{ border-color: rgba(255,255,255,0.07); }
+.btn-primary{
+  background: linear-gradient(90deg,var(--accent-dark), var(--accent-light));
+  border:none; color:#04100b; padding:10px 16px; border-radius:10px; font-weight:700; cursor:pointer;
+  transition:0.3s;
+}
+.btn-primary:hover{ transform:translateY(-2px); box-shadow: var(--soft-glow); }
+
+.wrapper{width:95%; max-width:1200px; margin:28px auto; display:grid; grid-template-columns: 1fr 420px; gap:28px; align-items:start;}
+@media(max-width:1000px){ .wrapper{grid-template-columns:1fr; padding-bottom:40px} }
+
+.main-card{
+  background:var(--glass); border-radius:var(--card-radius);
+  padding:18px; box-shadow:var(--shadow-lg); backdrop-filter: blur(var(--glass-blur));
+  border:1px solid rgba(255,255,255,0.02);
+}
+
+/* upload & files */
+.upload-area{display:grid; gap:12px; grid-template-columns: 1fr auto; align-items:center;}
+.file-input{display:flex; gap:12px; align-items:center;}
+input[type=file]{background:transparent; color:var(--muted-dark); border:1px dashed rgba(255,255,255,0.03); padding:10px 12px; border-radius:10px; cursor:pointer;}
+.meta-input{width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.02); background:#06080a; color:#e6f7ea;}
+.progress-wrap{height:8px; width:100%; background: rgba(255,255,255,0.03); border-radius:8px; overflow:hidden;}
+.progress-bar{height:100%; width:0%; background:linear-gradient(90deg,var(--accent-dark),var(--accent-light)); transition:width .18s linear;}
+
+/* files grid */
+.files-grid{display:grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap:14px; margin-top:18px;}
+.file-card{
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+  padding:12px; border-radius:12px; display:flex; gap:12px; align-items:center;
+  border:1px solid rgba(255,255,255,0.02); transition: transform .18s ease, box-shadow .18s;
+}
+.file-card:hover{transform:translateY(-6px); box-shadow: 0 12px 30px rgba(2,6,23,0.45);}
+.file-icon{width:54px; height:54px; border-radius:10px; flex-shrink:0; display:grid; place-items:center; font-weight:700; color:#04100b; background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)); border:1px solid rgba(255,255,255,0.02);}
+.file-info{flex:1; min-width:0;}
+.file-name{font-weight:700; font-size:14px; color:#eafff0; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;}
+.file-meta{font-size:12px; color:var(--muted-dark); margin-top:6px;}
+.file-actions{display:flex; gap:8px; align-items:center;}
+.action-btn{padding:8px 10px; border-radius:8px; border:none; cursor:pointer; font-weight:600; transition:0.3s;}
+.download-btn{background:transparent; border:1px solid rgba(255,255,255,0.03); color:var(--muted-dark);}
+.download-btn:hover{border-color: rgba(255,255,255,0.08); transform:translateY(-2px);}
+.share-btn{background:linear-gradient(90deg,#26c6da,#00b8d4); color:#04100b;}
+.share-btn:hover{transform:translateY(-2px); box-shadow: 0 4px 12px rgba(38,198,218,0.4);}
+.delete-btn{background:transparent; border:1px solid rgba(255,255,255,0.04); color:#ff7a7a;}
+.delete-btn:hover{border-color:rgba(255,122,122,0.3); transform:translateY(-2px);}
+
+/* Educational Info Box */
+.info-box{
+  background: linear-gradient(135deg, rgba(38,198,218,0.08), rgba(54,194,112,0.06));
+  border:1px solid rgba(38,198,218,0.12);
+  padding:14px; border-radius:10px; margin-top:14px;
+  display:flex; gap:12px; align-items:start;
+}
+.info-box .icon{font-size:22px; flex-shrink:0;}
+.info-box .text{flex:1;}
+.info-box .text strong{color:#26c6da; display:block; margin-bottom:4px;}
+.info-box .text p{font-size:13px; color:var(--muted-dark); line-height:1.5; margin:0;}
+
+/* Security Tips */
+.security-tips{
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border:1px solid rgba(54,194,112,0.08);
+  padding:14px; border-radius:10px;
+}
+.security-tips h4{color:var(--accent); margin-bottom:10px; font-size:14px;}
+.security-tips ul{margin:0; padding-left:18px; font-size:13px; color:var(--muted-dark); line-height:1.8;}
+.security-tips li{margin-bottom:6px;}
+
+/* 🔥 NEW: Enhanced Share Modal */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(2,6,23,0.85);
+  display:none; align-items:center; justify-content:center; z-index:1400;
+  backdrop-filter: blur(6px);
+}
+.modal-overlay.active{display:flex;}
+.modal{
+  background:var(--glass); border-radius:14px; padding:28px;
+  max-width:500px; width:90%;
+  border:1px solid rgba(255,255,255,0.06);
+  box-shadow:var(--shadow-lg);
+  backdrop-filter: blur(var(--glass-blur));
+}
+.modal h3{margin-bottom:18px; color:#eafff0; font-size:1.5rem;}
+.modal label{display:block; margin-bottom:8px; font-size:13px; color:var(--muted-dark); font-weight:600;}
+.modal input, .modal select{
+  width:100%; padding:12px; border-radius:10px;
+  border:1px solid rgba(255,255,255,0.06);
+  background:#06080a; color:#e6f7ea; margin-bottom:16px;
+  font-size:14px;
+}
+.share-link-display{
+  background:rgba(0,255,136,0.05); padding:12px; border-radius:8px;
+  border:1px dashed rgba(0,255,136,0.2); margin-bottom:16px;
+  display:flex; align-items:center; gap:10px;
+}
+.share-link-display input{
+  flex:1; background:transparent; border:none; color:#00ff84;
+  font-family:monospace; font-size:13px; margin:0; padding:4px;
+}
+.copy-btn{
+  padding:8px 16px; background:linear-gradient(90deg,var(--accent-dark),var(--accent-light));
+  color:#04100b; border:none; border-radius:6px; cursor:pointer;
+  font-weight:600; font-size:13px;
+}
+.share-options{
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:16px;
+}
+.share-option-btn{
+  padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.02); color:#e6f7ea; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  transition:0.3s; font-size:13px;
+}
+.share-option-btn:hover{
+  background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.1);
+  transform:translateY(-2px);
+}
+.share-option-btn .icon{font-size:24px;}
+.modal-actions{display:flex; gap:10px; justify-content:flex-end;}
+.modal .btn-cancel{
+  background:transparent; border:1px solid rgba(255,255,255,0.06);
+  color:var(--muted-dark); padding:10px 20px; border-radius:8px; cursor:pointer;
+  font-weight:600;
+}
+.modal .btn-share{
+  background:linear-gradient(90deg,#26c6da,#00b8d4); color:#04100b;
+  border:none; padding:10px 24px; border-radius:8px; font-weight:600; cursor:pointer;
+}
+
+/* sidebar, toasts, overlay */
+.sidebar{display:flex; flex-direction:column; gap:14px;}
+.card-sidebar{ background:var(--glass); padding:16px; border-radius:12px; box-shadow:var(--shadow-lg); border:1px solid rgba(255,255,255,0.02);}
+.stat{display:flex; justify-content:space-between; align-items:center; gap:12px;}
+.stat strong{font-size:18px; color:#eafff0;}
+
+.toasts{position:fixed; top:18px; right:18px; z-index:1200; display:flex; flex-direction:column; gap:8px;}
+.toast{min-width:220px; padding:10px 12px; border-radius:10px; color:#041009; font-weight:700; box-shadow:0 6px 20px rgba(2,6,23,0.45);}
+.toast.success{background:linear-gradient(90deg,var(--accent-dark),var(--accent-light))}
+.toast.error{background:linear-gradient(90deg,#ff9b9b,#ff6b6b); color:#2b0000}
+
+.overlay{position:fixed; inset:0; background:rgba(2,6,23,0.6); display:none; align-items:center; justify-content:center; z-index:1300;}
+.loader{background:rgba(255,255,255,0.02); padding:24px; border-radius:12px; display:flex; gap:14px; align-items:center; border:1px solid rgba(255,255,255,0.02); box-shadow:var(--shadow-lg);}
+.spinner{width:48px;height:48px;border-radius:50%;border:5px solid rgba(255,255,255,0.06); border-top-color:var(--accent); animation:spin .9s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<canvas id="lineCanvas" aria-hidden="true"></canvas>
+<button class="theme-toggle" onclick="toggleTheme()">✦</button>
+
+<nav>
+  <div class="brand">
+    <div class="logo">SS</div>
+    <div>
+      <h1>SecureShare</h1>
+      <p>Private & Encrypted</p>
+    </div>
+  </div>
+
+  <div class="nav-actions">
+    <button class="btn-ghost" onclick="toggleView()">View: Grid</button>
+    <button class="btn-primary" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<main style="flex:1">
+  <div class="wrapper">
+    <!-- LEFT: main content -->
+    <section class="main-card" aria-labelledby="upload-heading">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+        <div>
+          <div class="section-title" id="upload-heading">Upload & Manage Files</div>
+          <div style="color:var(--muted-dark); font-size:13px">Files are encrypted locally before upload. Generate shareable links for WhatsApp, Email, or SMS.</div>
+        </div>
+        <div style="text-align:right; color:var(--muted-dark); font-size:13px" id="server-time"></div>
+      </div>
+
+      <!-- Educational Info Box -->
+      <div class="info-box">
+        <div class="icon">🔐</div>
+        <div class="text">
+          <strong>How It Works</strong>
+          <p>Your files are encrypted with AES-256 on your device before upload. Generate secure shareable links that expire after 24 hours. Share via WhatsApp, Email, or SMS - no account needed!</p>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <div class="upload-area">
+          <div class="file-input">
+            <input id="fileInput" type="file" aria-label="Select file to upload">
+            <input id="fileDesc" class="meta-input" type="text" placeholder="Description (optional)">
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px; min-width:120px;">
+            <button id="uploadBtn" class="btn-primary">Encrypt & Upload</button>
+            <div class="progress-wrap" aria-hidden="true" style="display:block; margin-top:6px;">
+              <div class="progress-bar" id="uploadProgress"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:10px; color:var(--muted-dark); font-size:13px">
+          <strong>📎 Supported formats:</strong> PDF, DOCX, PNG, JPG, ZIP • <strong>Max size:</strong> 100MB
+        </div>
+
+        <div class="files-grid" id="filesGrid" style="margin-top:18px">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: sidebar -->
+    <aside class="sidebar">
+      <div class="card-sidebar">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px">
+          <div style="font-weight:700">Storage</div>
+          <div style="color:var(--muted-dark); font-size:13px" id="fileCount">0 files</div>
+        </div>
+        <div style="font-size:12px; color:var(--muted-dark)">Used: <strong id="storageUsed">0 MB</strong></div>
+      </div>
+
+      <!-- Security Tips -->
+      <div class="card-sidebar security-tips">
+        <h4>🛡️ Security Best Practices</h4>
+        <ul>
+          <li><strong>Backup your keys:</strong> Store encryption keys in a secure password manager</li>
+          <li><strong>Share links carefully:</strong> Links are valid for 24 hours</li>
+          <li><strong>Revoke access:</strong> Delete share links when no longer needed</li>
+          <li><strong>Use strong passwords:</strong> Mix letters, numbers, and symbols</li>
+          <li><strong>Delete old files:</strong> Remove files you no longer need</li>
+        </ul>
+      </div>
+
+      <div class="card-sidebar">
+        <div style="font-weight:700; margin-bottom:8px">Quick Actions</div>
+        <div style="display:flex; flex-direction:column; gap:8px">
+          <button class="btn-ghost" onclick="downloadAll()">Download last</button>
+          <button class="btn-ghost" onclick="clearFiles()">Clear deleted entries</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<!-- Toasts -->
+<div class="toasts" id="toasts"></div>
+
+<!-- Loading overlay -->
+<div class="overlay" id="overlay" role="status" aria-live="polite">
+  <div class="loader">
+    <div class="spinner" aria-hidden="true"></div>
+    <div style="color: #eafff0;">
+      <div style="font-weight:700">Encrypting & Uploading…</div>
+      <div style="font-size:13px; color:var(--muted-dark); margin-top:6px">Files are encrypted locally on your device before being uploaded.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 🔥 NEW: Enhanced Share Modal with Link Generation -->
+<div class="modal-overlay" id="shareModal">
+  <div class="modal">
+    <h3>📤 Share File</h3>
+    
+    <label>Link Expiration:</label>
+    <select id="expiryHours">
+      <option value="1">1 hour</option>
+      <option value="6">6 hours</option>
+      <option value="24" selected>24 hours (recommended)</option>
+      <option value="72">3 days</option>
+      <option value="168">7 days</option>
+    </select>
+
+    <button class="btn-primary" onclick="generateShareLink()" style="width:100%; margin-bottom:16px;">
+      🔗 Generate Shareable Link
+    </button>
+
+    <div id="shareLinkSection" style="display:none;">
+      <label>Share Link (Anyone with this link can download):</label>
+      <div class="share-link-display">
+        <input type="text" id="shareLinkInput" readonly onclick="this.select()">
+        <button class="copy-btn" onclick="copyShareLink()">📋 Copy</button>
+      </div>
+
+      <label>Share via:</label>
+      <div class="share-options">
+        <button class="share-option-btn" onclick="shareViaWhatsApp()">
+          <div class="icon">💬</div>
+          <div>WhatsApp</div>
+        </button>
+        <button class="share-option-btn" onclick="shareViaEmail()">
+          <div class="icon">📧</div>
+          <div>Email</div>
+        </button>
+        <button class="share-option-btn" onclick="shareViaSMS()">
+          <div class="icon">📱</div>
+          <div>SMS</div>
+        </button>
+      </div>
+
+      <div style="font-size:12px; color:var(--muted-dark); padding:10px; background:rgba(255,166,0,0.1); border-radius:8px; border:1px solid rgba(255,166,0,0.2);">
+        ⚠️ <strong>Note:</strong> This link will expire in <span id="expiryDisplay">24 hours</span>. Anyone with this link can download the file.
+      </div>
+    </div>
+
+    <div class="modal-actions" style="margin-top:16px;">
+      <button class="btn-cancel" onclick="closeShareModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== LINE MESH ANIMATION ===== */
+(function(){
+  const canvas = document.getElementById('lineCanvas');
+  const ctx = canvas.getContext('2d');
+  let w = canvas.width = window.innerWidth;
+  let h = canvas.height = window.innerHeight;
+
+  const N = Math.max(40, Math.floor((w*h)/90000));
+  const pts = [];
+  for(let i=0;i<N;i++){
+    pts.push({ x: Math.random()*w, y: Math.random()*h, vx:(Math.random()-0.5)*0.3, vy:(Math.random()-0.5)*0.3 });
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    for(let i=0;i<N;i++){
+      const a = pts[i];
+      for(let j=i+1;j<N;j++){
+        const b = pts[j];
+        const dx = a.x-b.x, dy = a.y-b.y;
+        const d2 = dx*dx + dy*dy;
+        const maxD = 120*120;
+        if(d2 < maxD){
+          const alpha = 0.09*(1 - d2/maxD);
+          ctx.beginPath();
+          ctx.moveTo(a.x,a.y);
+          ctx.lineTo(b.x,b.y);
+          ctx.strokeStyle = `rgba(38,198,218,${alpha})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+      }
+    }
+    for(let i=0;i<N;i++){
+      const p = pts[i];
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,1.1,0,Math.PI*2);
+      ctx.fillStyle = 'rgba(38,198,218,0.12)';
+      ctx.fill();
+      p.x += p.vx; p.y += p.vy;
+      if(p.x<0||p.x>w) p.vx *= -1;
+      if(p.y<0||p.y>h) p.vy *= -1;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize', ()=>{ w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; });
+})();
+
+/* ===== Theme toggle ===== */
+function toggleTheme(){
+  document.body.classList.toggle('light');
+}
+
+/* ===== Toasts ===== */
+function toast(message, kind='success', timeout=4000){
+  const container = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = 'toast ' + (kind==='error'?'error':'success');
+  el.textContent = message;
+  container.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateY(-6px)'; }, timeout-500);
+  setTimeout(()=>el.remove(), timeout);
+}
+
+/* ===== Load files ===== */
+let filesCache = [];
+async function loadFiles(){
+  try{
+    const res = await fetch('/api/files');
+    const data = await res.json();
+    if(!res.ok){ toast(data.error || 'Failed loading files','error'); return; }
+    filesCache = [...(data.owned||[]), ...(data.shared||[])];
+
+    document.getElementById('fileCount').textContent = (filesCache.length) + ' files';
+    let used = filesCache.reduce((a,f)=> a + (f.file_size || 0), 0);
+    used = Math.round(used/1024/1024*100)/100;
+    document.getElementById('storageUsed').textContent = used + ' MB';
+
+    const grid = document.getElementById('filesGrid');
+    grid.innerHTML = '';
+    if(filesCache.length === 0){
+      const tpl = document.createElement('div');
+      tpl.className = 'empty-state';
+      tpl.innerHTML = '<div style="font-weight:700">No files yet</div><div style="color:var(--muted-dark); font-size:13px">Upload a file to get started — generate shareable links to send via WhatsApp, Email, or SMS.</div>';
+      grid.appendChild(tpl);
+      return;
+    }
+
+    filesCache.forEach(f=>{
+      const card = document.createElement('div');
+      card.className = 'file-card';
+      const uploadDate = new Date(f.upload_date).toLocaleString();
+      card.innerHTML = `
+        <div class="file-icon" style="background:#9ad7b7;color:#04100b">🔒</div>
+        <div class="file-info">
+          <div class="file-name" title="${escapeHtml(f.original_filename)}">${escapeHtml(f.original_filename)}</div>
+          <div class="file-meta">${f.owner ? 'Owner: '+escapeHtml(f.owner) : ''} • ${uploadDate}</div>
+        </div>
+        <div class="file-actions">
+          <button class="action-btn download-btn" onclick="downloadFile(${f.id})" title="Download encrypted file">⬇️</button>
+          <button class="action-btn share-btn" onclick="shareFile(${f.id})" title="Generate shareable link">📤</button>
+          <button class="action-btn delete-btn" onclick="deleteFile(${f.id})" title="Delete file permanently">🗑️</button>
+        </div>`;
+      grid.appendChild(card);
+    });
+  }catch(err){
+    console.error(err);
+    toast('Connection error','error');
+  }
+}
+
+function escapeHtml(s){ return String(s).replace(/[&<>"]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
+
+/* ===== Server time ===== */
+function refreshServerTime(){
+  document.getElementById('server-time').textContent = new Date().toLocaleString();
+}
+setInterval(refreshServerTime,1000);
+refreshServerTime();
+
+/* ===== AES-GCM encryption ===== */
+async function generateAesKey(){
+  return await crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, true, ["encrypt","decrypt"]);
+}
+function bufToBase64(buffer){
+  return btoa(String.fromCharCode(...new Uint8Array(buffer)));
+}
+async function exportKeyToBase64(key){
+  const raw = await crypto.subtle.exportKey('raw', key);
+  return bufToBase64(raw);
+}
+
+/* ===== Upload with encryption (AES-CBC to match server) ===== */
+/* ===== Upload with encryption ===== */
+document.getElementById('uploadBtn').addEventListener('click', async () => {
+    const input = document.getElementById('fileInput');
+    if (!input.files || input.files.length === 0) {
+        toast('Select a file first', 'error');
+        return;
+    }
+
+    const file = input.files[0];
+    if (file.size > 100 * 1024 * 1024) {
+        toast('File exceeds 100MB limit', 'error');
+        return;
+    }
+
+    document.getElementById('overlay').style.display = 'flex';
+
+    try {
+        // Read file
+        const fileData = new Uint8Array(await file.arrayBuffer());
+
+        // Generate key and IV
+        const key = crypto.getRandomValues(new Uint8Array(32));
+        const iv = crypto.getRandomValues(new Uint8Array(16));
+
+        // Add padding
+        const blockSize = 16;
+        const paddingLen = blockSize - (fileData.length % blockSize);
+        const padded = new Uint8Array(fileData.length + paddingLen);
+        padded.set(fileData);
+        padded.fill(paddingLen, fileData.length);
+
+        // Encrypt
+        const cryptoKey = await crypto.subtle.importKey('raw', key, {name: 'AES-CBC'}, false, ['encrypt']);
+        const ciphertext = await crypto.subtle.encrypt({name: 'AES-CBC', iv: iv}, cryptoKey, padded);
+
+        // Combine IV + ciphertext
+        const encrypted = new Uint8Array(iv.length + ciphertext.byteLength);
+        encrypted.set(iv, 0);
+        encrypted.set(new Uint8Array(ciphertext), iv.length);
+
+        // Convert key to base64
+        const keyB64 = btoa(String.fromCharCode(...key));
+
+        // Upload
+        const form = new FormData();
+        form.append('file', new Blob([encrypted]), file.name + '.enc');
+        form.append('original_filename', file.name);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/upload', true);
+
+        xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+                document.getElementById('uploadProgress').style.width = 
+                    Math.round((e.loaded / e.total) * 100) + '%';
+            }
+        };
+
+        xhr.onload = () => {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('uploadProgress').style.width = '0%';
+            if (xhr.status === 200) {
+                toast('✅ File uploaded!', 'success');
+                document.getElementById('fileInput').value = '';
+                loadFiles();
+                downloadKey(file.name, keyB64);
+            } else {
+                toast('Upload failed', 'error');
+            }
+        };
+
+        xhr.onerror = () => {
+            document.getElementById('overlay').style.display = 'none';
+            toast('Upload failed', 'error');
+        };
+
+        xhr.send(form);
+
+    } catch (err) {
+        document.getElementById('overlay').style.display = 'none';
+        toast('Error: ' + err.message, 'error');
+    }
+});
+
+function downloadKey(filename, keyB64) {
+    const blob = new Blob([keyB64], {type: 'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename + '.key.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('🔑 Key downloaded!', 'success');
+}
+/* ===== 🔥 NEW: Share Modal with Link Generation ===== */
+let currentShareFileId = null;
+let currentShareLink = null;
+
+function shareFile(fileId){
+  currentShareFileId = fileId;
+  currentShareLink = null;
+  document.getElementById('shareModal').classList.add('active');
+  document.getElementById('shareLinkSection').style.display = 'none';
+  document.getElementById('expiryHours').value = '24';
+}
+
+function closeShareModal(){
+  document.getElementById('shareModal').classList.remove('active');
+  currentShareFileId = null;
+  currentShareLink = null;
+}
+
+async function generateShareLink(){
+  if(!currentShareFileId){
+    toast('No file selected','error');
+    return;
+  }
+
+  const expiryHours = parseInt(document.getElementById('expiryHours').value);
+  
+  try{
+    const res = await fetch('/api/share/link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        file_id: currentShareFileId,
+        expiry_hours: expiryHours
+      })
+    });
+    
+    const data = await res.json();
+    
+    if(res.ok){
+      currentShareLink = data.share_url;
+      document.getElementById('shareLinkInput').value = currentShareLink;
+      document.getElementById('shareLinkSection').style.display = 'block';
+      
+      // Update expiry display
+      const expiryText = expiryHours === 1 ? '1 hour' : 
+                         expiryHours === 6 ? '6 hours' :
+                         expiryHours === 24 ? '24 hours' :
+                         expiryHours === 72 ? '3 days' : '7 days';
+      document.getElementById('expiryDisplay').textContent = expiryText;
+      
+      toast('🔗 Share link generated!', 'success');
+    } else {
+      toast(data.error || 'Failed to generate link', 'error');
+    }
+  }catch(err){
+    console.error(err);
+    toast('Failed to generate link', 'error');
+  }
+}
+
+function copyShareLink(){
+  const input = document.getElementById('shareLinkInput');
+  input.select();
+  document.execCommand('copy');
+  
+  // Modern API fallback
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(input.value);
+  }
+  
+  toast('📋 Link copied to clipboard!', 'success');
+}
+
+function shareViaWhatsApp(){
+  if(!currentShareLink){
+    toast('Generate link first','error');
+    return;
+  }
+  
+  const file = filesCache.find(f => f.id === currentShareFileId);
+  const filename = file ? file.original_filename : 'file';
+  const message = `🔒 SecureShare: ${filename}\n\nDownload: ${currentShareLink}\n\n⚠️ This link expires soon. Keep your encryption key safe!`;
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  
+  window.open(whatsappUrl, '_blank');
+  toast('📱 Opening WhatsApp...', 'success');
+}
+
+function shareViaEmail(){
+  if(!currentShareLink){
+    toast('Generate link first','error');
+    return;
+  }
+  
+  const file = filesCache.find(f => f.id === currentShareFileId);
+  const filename = file ? file.original_filename : 'file';
+  const subject = `SecureShare: ${filename}`;
+  const body = `Hi,\n\nI've shared a secure encrypted file with you:\n\nFile: ${filename}\nDownload Link: ${currentShareLink}\n\n⚠️ Important:\n- This link will expire soon\n- You'll need the encryption key (.key.txt file) to decrypt the file\n- Keep the key secure and don't share it publicly\n\nBest regards`;
+  
+  const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.location.href = mailtoUrl;
+  
+  toast('📧 Opening email client...', 'success');
+}
+
+function shareViaSMS(){
+  if(!currentShareLink){
+    toast('Generate link first','error');
+    return;
+  }
+  
+  const file = filesCache.find(f => f.id === currentShareFileId);
+  const filename = file ? file.original_filename : 'file';
+  const message = `SecureShare: ${filename}\n${currentShareLink}\n⚠️ Link expires soon!`;
+  const smsUrl = `sms:?body=${encodeURIComponent(message)}`;
+  
+  window.location.href = smsUrl;
+  toast('📱 Opening SMS...', 'success');
+}
+
+// Close modal when clicking outside
+document.getElementById('shareModal').addEventListener('click', (e)=>{
+  if(e.target.id === 'shareModal'){
+    closeShareModal();
+  }
+});
+
+/* ===== Download & Delete ===== */
+function downloadFile(id){
+  window.open(`/api/download/${id}`, '_blank');
+  toast('⬇️ Download started','success');
+}
+
+async function deleteFile(id){
+  if(!confirm('⚠️ Delete this file? This cannot be undone.')) return;
+  try{
+    const res = await fetch(`/api/delete/${id}`, { method:'DELETE' });
+    const data = await res.json();
+    if(res.ok){
+      toast('🗑️ File deleted','success');
+      loadFiles();
+    } else {
+      toast(data.error || 'Delete failed','error');
+    }
+  }catch(err){ 
+    console.error(err); 
+    toast('Delete failed','error'); 
+  }
+}
+
+/* ===== Quick actions & logout ===== */
+function toggleView(){ 
+  toast('📋 View toggle coming soon','success'); 
+}
+
+function downloadAll(){ 
+  if(filesCache.length === 0){
+    toast('No files to download','error');
+    return;
+  }
+  const lastFile = filesCache[filesCache.length - 1];
+  downloadFile(lastFile.id);
+}
+
+function clearFiles(){ 
+  toast('🧹 Clear action - not yet implemented','success'); 
+}
+
+async function logout(){ 
+  try{ 
+    await fetch('/logout', { method:'POST' }); 
+  } finally { 
+    window.location.href = '/'; 
+  } 
+}
+
+/* ===== Initial load ===== */
+loadFiles();
+
+// Keyboard shortcut (Ctrl/Cmd + U)
+document.addEventListener('keydown', (e)=>{
+  if((e.ctrlKey || e.metaKey) && e.key === 'u'){
+    e.preventDefault();
+    document.getElementById('fileInput').click();
+  }
+});
+</script>
+</body>
+</html>
