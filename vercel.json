@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "IC_CS_01/scanner.py",
+      "src": "scanner.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "IC_CS_01/scanner.py"
+      "dest": "scanner.py"
     }
   ]
 }
